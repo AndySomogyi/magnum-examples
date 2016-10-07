@@ -50,8 +50,7 @@
 #ifdef MAGNUM_BUILD_STATIC
 /* Import plugins in static build */
 static int importStaticPlugins() {
-    CORRADE_PLUGIN_IMPORT(MagnumFont)
-    CORRADE_PLUGIN_IMPORT(TgaImporter)
+    CORRADE_PLUGIN_IMPORT(StbTrueTypeFont)
     return 0;
 } CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
 #endif
@@ -86,16 +85,13 @@ class TextExample: public Platform::Application {
 };
 
 TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), _importerManager(MAGNUM_PLUGINS_IMPORTER_DIR), _manager(MAGNUM_PLUGINS_FONT_DIR), _text{NoCreate}, _vertices(Buffer::TargetHint::Array), _indices(Buffer::TargetHint::ElementArray) {
-    /* Load MagnumFont plugin */
-    _font = _manager.loadAndInstantiate("MagnumFont");
+    /* Load some TTF font plugin */
+    _font = _manager.loadAndInstantiate("TrueTypeFont");
     if(!_font) std::exit(1);
 
     /* Open the font and fill glyph cache */
     Utility::Resource rs("fonts");
-    if(!_font->openData(std::vector<std::pair<std::string, Containers::ArrayView<const char>>>{
-        {"DejaVuSans.conf", rs.getRaw("DejaVuSans.conf")},
-        {"DejaVuSans.tga", rs.getRaw("DejaVuSans.tga")}}, 0.0f))
-    {
+    if(!_font->openSingleData(rs.getRaw("DejaVuSans.ttf"), 110.0f)) {
         Error() << "Cannot open font file";
         std::exit(1);
     }

@@ -43,14 +43,14 @@ find_package(Magnum REQUIRED
     Shaders
     Text)
 
-if(MAGNUM_BUILD_STATIC)
-    find_package(Magnum REQUIRED TgaImporter MagnumFont)
-endif()
-
 if(CORRADE_TARGET_NACL)
     find_package(Magnum REQUIRED NaClApplication)
 else()
     find_package(Magnum REQUIRED Sdl2Application)
+endif()
+
+if(MAGNUM_BUILD_STATIC)
+    find_package(MagnumPlugins REQUIRED StbTrueTypeFont)
 endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -71,7 +71,7 @@ target_link_libraries(magnum-text
     Magnum::Text)
 
 if(MAGNUM_BUILD_STATIC)
-    target_link_libraries(magnum-text ${MAGNUM_TGAIMPORTER_LIBRARIES} ${MAGNUM_MAGNUMFONT_LIBRARIES} ${MAGNUM_LIBRARIES})
+    target_link_libraries(magnum-text MagnumPlugins::StbTrueTypeFont)
 endif()
 
 # Installation for NaCl
