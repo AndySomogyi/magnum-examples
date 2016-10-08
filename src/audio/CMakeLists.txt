@@ -46,6 +46,10 @@ find_package(Magnum REQUIRED
     SceneGraph
     Sdl2Application)
 
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED WavAudioImporter)
+endif()
+
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
@@ -63,6 +67,16 @@ target_link_libraries(magnum-audio
     Magnum::DebugTools
     Magnum::Magnum
     Magnum::SceneGraph)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    target_link_libraries(magnum-audio Magnum::WavAudioImporter)
+endif()
 
-install(TARGETS magnum-audio DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-audio.md)
+# Installation for Emscripten
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES audio-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS magnum-audio DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-audio.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
+else()
+    install(TARGETS magnum-audio DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-audio.md)
+endif()
